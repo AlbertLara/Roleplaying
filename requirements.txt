@@ -1,0 +1,7 @@
+requests
+json
+xlrd
+openpyxl
+pyyaml
+flask_restx
+flask
