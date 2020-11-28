@@ -1,0 +1,20 @@
+<!-- app/templates/home/players.html -->
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+{% block title %}Partidas{% endblock %}
+{% block body %}
+<div class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="intro-message">
+                    <h1>Partidas</h1>
+                    <h3>Crea o visualiza tus partidas</h3>
+                    <hr class="intro-divider">
+                    {{ wtf.quick_form(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
