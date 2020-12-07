@@ -31,15 +31,8 @@ def games():
     """
     Render the dashboard template on the /dashboard route
     """
-    games = Games.query.filter_by(MasterId=current_user.id).all()
+    games = Games.query.filter_by(masterId=current_user.id).all()
     form = NewGame()
     if form.validate_on_submit():
         return redirect(url_for('game.create'))
-    return render_template('home/games.html',form=form, title="Games")
-
-@home.route('/admin')
-@login_required
-def admin_dashboard():
-    if not current_user.is_admin:
-        abort(403)
-    return render_template('home/admin_dashboard.html',title='Dashboard')
+    return render_template('home/games.html', games=games,form=form, title="Games")

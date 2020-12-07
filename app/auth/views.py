@@ -23,8 +23,8 @@ def register():
         # add employee to the database
         db.session.add(employee)
         db.session.commit()
-        flash('You have successfully registered! You may now login.')
-
+        user = User.query.filter_by(username=employee.username).first()
+        print(user)
         # redirect to the login page
         return redirect(url_for('auth.login'))
 
@@ -43,7 +43,7 @@ def login():
 
         # check whether employee exists in the database and whether
         # the password entered matches the password in the database
-        employee = User.query.filter_by(email=form.email.data).first()
+        employee = User.query.filter_by(username=form.username.data).first()
         if employee is not None and employee.verify_password(
                 form.password.data):
             # log employee in
@@ -53,7 +53,7 @@ def login():
             return redirect(url_for('home.players'))
         # when login details are incorrect
         else:
-            flash('Invalid email or password.')
+            flash('Correo o contraseña erróneos.')
 
     # load login template
     return render_template('auth/login.html', form=form, title='Login')

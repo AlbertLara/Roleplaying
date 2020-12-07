@@ -14,3 +14,6 @@ Flask-WTF
 flask-bootstrap
 wtforms
 email_validator
+marshmallow-sqlalchemy
+flask-marshmallow
+Flask-Script==2.0.6

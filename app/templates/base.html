@@ -1,4 +1,4 @@
-<!-- app/templates/base.html -->
+<!-- app/templates/navbar.html -->
 
 <!DOCTYPE html>
 
@@ -7,14 +7,14 @@
     <title>{{ title }} | RolePlaying Application</title>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+    <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 </head>
 <body>
 <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
     <div class="container topnav">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -24,14 +24,37 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
-                {% include "navbar.html" %}
+                <li><a href="{{ url_for('home.homepage') }}">Home</a></li>
+                {% if current_user.is_authenticated %}
+                {% if title != "Partida" %}
+                {% endif %}
+                <li><a href="{{ url_for('home.players') }}">Personajes</a></li>
+                <li><a href="{{ url_for('home.games') }}">Partidas</a></li>
+                {% if current_user.is_admin %}
+                <li><a href="{{ url_for('admin.users') }}">Usuarios</a></li>
+                <li><a href="{{ url_for('admin.sistemas') }}">Sistemas</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                {% else %}
+
+                <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+                <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                {% endif %}
             </ul>
         </div>
     </div>
 </nav>
+
 <div class="wrapper">
-    {% block body %}
+    <div class="intro-header">
+
+    </div>
+        {% block body %}
     {% endblock %}
+    <div class="container">
+
+</div>
+
 </div>
 </body>
 </html>

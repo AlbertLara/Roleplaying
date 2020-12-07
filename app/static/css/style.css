@@ -10,6 +10,10 @@ body, h1, h2, h3 {
     font-weight: 700;
 }
 
+td {
+    text-align: "left";
+}
+
 a, .navbar-default .navbar-brand, .navbar-default .navbar-nav>li>a {
   color: #aec251;
 }
@@ -106,3 +110,21 @@ p.copyright {
   height: 100%;
   margin: 0 auto -4em;
 }
+
+.outer {
+    display: table;
+    position: absolute;
+    height: 70%;
+    width: 100%;
+}
+
+.middle {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.inner {
+    margin-left: auto;
+    margin-right: auto;
+}
+
