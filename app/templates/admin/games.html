@@ -1,0 +1,41 @@
+{% import "bootstrap/utils.html" as utils %}
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <div class="card-header">
+                <h1>Partidas</h1>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            {% if games %}
+            <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Sistema</th>
+                    <th>DM</th>
+                    <th>Jugadores</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for game in games %}
+                <tr>
+                    <td> {{ game.title }}</td>
+                    <td> {{ game.sistemaName }}</td>
+                    <td> {{ game.master }}</td>
+                    <td> {{ game.players }}/{{ game.max_players }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
