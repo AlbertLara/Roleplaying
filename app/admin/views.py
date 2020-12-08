@@ -24,6 +24,10 @@ def admin_dashboard():
 def users():
     check_admin()
     users = User.query.all()
+    for user in users:
+        user_id = user.id
+        groups = db.session.query(Members).filter_by(user_id=user_id).all()
+        print(groups)
     template = render_template('admin/users.html',users=users,title='Usuarios')
     return template
 
@@ -32,24 +36,22 @@ def users():
 def partidas():
     check_admin()
     games = Games.query.all()
-    template = render_template('admin/partidas.html',data=games, title='Partidas')
+    for game in games:
+        master = User.query.filter_by(id=game.masterId).first()
+        sistema = Sistema.query.filter_by(id=game.Sistema).first()
+        game.sistemaName = sistema.nombre
+        game.master = master.username
+    template = render_template('admin/games.html',games=games, title='Partidas')
     return template
 
-@admin.route('/sistemas')
+@admin.route('/groups')
 @login_required
-def sistemas():
+def groups():
     check_admin()
-    sistemas = Sistema.query.all()
-    template = render_template('admin/sistemas.html',sistemas=sistemas, title='Sistemas')
-    return template
-
-
-@admin.route('/sistemas/partidas/<int:id>')
-@login_required
-def list_partidas(id):
-    check_admin()
-    games = Games.query.filter_by(Sistema = id).all()
-    if len(games) == 0:
-        games = []
-    template = render_template('admin/sistemas/partidas.html',games=games,title='Partidas')
+    groups = Groups.query.all()
+    for group in groups:
+        members = db.session.query(Members).filter_by(group_id=group.id).count()
+        print(members)
+        group.users = members
+    template = render_template('admin/groups.html',groups=groups,title='Grupos')
     return template

@@ -1,24 +1,30 @@
 <!-- app/templates/home/players.html -->
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "base.html" %}
-{% block title %}Partidas{% endblock %}
+{% block title %}Jugadores{% endblock %}
 {% block body %}
 <div class="container">
     <div class="row">
-        <div class="col intro-header">
-            <div  style="text-align:center;padding:0%" class="center intro-message">
-                <h1>Personajes</h1>
-                <hr class="intro-divider">
-            </div>
-
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <div style="text-align:center;">
-
+        <div class="col text-center">
+            <div class="card-header">
+                <h1>Jugadores</h1>
             </div>
         </div>
     </div>
+
+    {% if games %}
+    {% for game in games %}
+    <br>
+        <div class="card text-center">
+            <div class="card-header">
+                {{ game.title }}
+            </div>
+            <div class="card-body">
+                <h2>Creada por {{ game.masterId }}</h2>
+            </div>
+        </div>
+    {% endfor %}
+    {% endif %}
+    <br>
 </div>
 {% endblock %}

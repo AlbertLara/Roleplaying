@@ -5,46 +5,33 @@
 {% block body %}
 <div class="container">
     <div class="row">
-        <div class="col intro-header">
-            <div style="text-align:center; padding:0%" class="center intro-message">
+        <div class="col text-center">
+            <div class="card-header">
                 <h1>Partidas</h1>
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <div style="text-align:center;">
-                {% if games %}
-                <div style="text-align:left;" class="center">
-                    <table class="table table-striped table-bordered">
-                        <thead>
-                        <tr>
-                            <th> Título</th>
-                            <th> Jugadores</th>
-                            <th></th>
-                            <th> Solicitudes</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for game in games %}
-                        <tr>
-                            <td> {{ game.title }}</td>
-                            <td> {{ game.players }}</td>
-                            <td>
-                                <a href="#"> Añadir jugadores </a>
-                            </td>
-                            <td>
-                                <a href="#"> Ver </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% endif %}
-                <hr class="intro-divider">
-                {{ wtf.quick_form(form) }}
+
+    {% if games %}
+    {% for game in games %}
+    <br>
+        <div class="card text-center">
+            <div class="card-header">
+                {{ game.title }}
             </div>
+            <div class="card-body">
+                <p>Jugadores: {{ game.players }}</p>
+                <a href="#" class="btn btn-primary">Ver solicitudes</a>
+                <br><br>
+                <a href="#" class="btn btn-primary">Enviar invitaciones</a>
+            </div>
+        </div>
+    {% endfor %}
+    {% endif %}
+    <br>
+    <div class="row">
+        <div class="col text-center">
+            {{ wtf.quick_form(form) }}
         </div>
     </div>
 </div>

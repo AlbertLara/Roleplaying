@@ -2,10 +2,10 @@
 
 from flask import render_template, redirect, render_template, url_for, abort
 from flask_login import login_required, current_user
-from ..models import Games, Players
+from ..models import Games
 from .forms import *
 from . import home
-
+from .. import db
 
 @home.route('/')
 def homepage():
@@ -21,8 +21,9 @@ def players():
     """
     Render the dashboard template on the /dashboard route
     """
-    print(current_user.is_admin)
-    return render_template('home/players.html',path='home', title="Players")
+    games = db.session.query(Games).filter(Games.masterId != current_user.id).all()
+    print(games)
+    return render_template('home/players.html', games=games,path='home', title="Players")
 
 
 @home.route('/games', methods=['GET','POST'])
