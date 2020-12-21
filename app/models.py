@@ -45,17 +45,13 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-def load_groups(user_id):
-    groups = Groups.query.join(Members, Members.group_id==Groups.id).filter(Members.user_id==user_id).all()
-    return groups
-
-
 class Games(db.Model):
     __tablename__ = 'Games'
     id = db.Column(db.Integer, primary_key=True,nullable=False)
     title = db.Column(db.String(40), index=True, unique=True,nullable=False)
     game_key = db.Column(db.String(4),unique=True)
     max_players = db.Column(db.Integer,nullable=False)
+    master_Id = db.Column(db.Integer, nullable=False)
     Sistema = db.Column(db.Integer,nullable=False)
     is_public = db.Column(db.Boolean, default=True)
     creation_date = db.Column(db.DateTime, nullable=False)
@@ -64,47 +60,19 @@ class Games(db.Model):
     @property
     def sistema(self):
         return Sistema.query.filter_by(id=self.Sistema).first().nombre
-
     @property
     def master(self):
-        members = Members.query.join(Groups, Members.group_id==Groups.id).filter(Members.game_id==self.id, Groups.priority==2).first()
-        return User.query.filter_by(id=members.user_id).first().username
-
-    @property
-    def actual_players(self):
-        groups = Groups.query.join(Members, Members.group_id==Groups.id).filter(Groups.priority == 1).count()
-        return groups
-
-    @property
-    def groups(self):
-        groups = Groups.query.filter_by(game_id=self.id).with_entities(Groups.priority,Groups.group_name).all()
-        groups0 = {group[0]:group[1] for group in groups}
-        return groups0
+        return User.query.filter(User.id==self.master_Id).first().username
 
     def __repr__(self):
         return '<Games: {}>'.format(self.title)
-
-class Groups(db.Model):
-    __tablename__='Groups'
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    game_id = db.Column(db.Integer, nullable=False)
-    group_name = db.Column(db.String(40),nullable=False)
-    priority = db.Column(db.Integer, nullable=False)
-    max_players = db.Column(db.Integer)
-
-class Roles(db.Model):
-    __tablename__='Roles'
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    rol = db.Column(db.String(10),unique=True,nullable=False)
-    priority = db.Column(db.Integer,unique=True)
-    max_users = db.Column(db.String(20),nullable=True)
 
 class Members(db.Model):
     __tablename__='Members'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     game_id = db.Column(db.Integer,nullable=False)
-    group_id = db.Column(db.Integer,nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
+    approved = db.Column(db.Boolean)
 
 class Razas(db.Model):
     __tablename__ = 'Razas'

@@ -17,7 +17,6 @@ class ViewGamesForm(FlaskForm):
     submit = SubmitField('Buscar partidas')
 
 class CreateGameForm(FlaskForm):
-
     title = StringField('Titulo',validators=[DataRequired()])
     key = StringField('Clave', validators=[DataRequired()])
     max_players = IntegerField('Numero jugadores',default=2,widget=NumberInput(step=1,min=2,max=7),validators=[DataRequired()])

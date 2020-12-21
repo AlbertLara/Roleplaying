@@ -37,23 +37,3 @@ def partidas():
     games = Games.query.all()
     template = render_template('admin/games.html',games=games, title='Partidas')
     return template
-
-@admin.route('/groups')
-@login_required
-def groups():
-    check_admin()
-    groups = Groups.query.all()
-    for group in groups:
-        members = db.session.query(Members).filter_by(group_id=group.id).count()
-        group.users = members
-    template = render_template('admin/groups.html',groups=groups,title='Grupos')
-    return template
-
-
-@admin.route('/roles')
-@login_required
-def roles():
-    check_admin()
-    roles = Roles.query.all()
-    template = render_template('admin/roles.html',roles=roles,title='Roles')
-    return template
