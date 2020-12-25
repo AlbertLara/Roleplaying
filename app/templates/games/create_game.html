@@ -6,7 +6,7 @@
 {% block body %}
 <div class="content-section">
   <div class="center">
-    <a class="btn btn-default" href="{{ url_for('home.games') }}" role="button">Atras</a>
+    <a class="btn btn-default" href="{{ url_for('game.user_games') }}" role="button">Atras</a>
     <h1>Crear una partida</h1>
     <br/>
     {{ wtf.quick_form(form) }}

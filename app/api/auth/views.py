@@ -4,8 +4,8 @@ from flask import flash, redirect, render_template, url_for
 from flask_login import login_required, login_user, logout_user, current_user
 from . import auth
 from .forms import LoginForm, RegistrationForm
-from .. import db
-from ..models import User
+from app import db
+from app.models import User
 
 
 @auth.route('/register', methods=['GET', 'POST'])
@@ -50,7 +50,7 @@ def login():
             login_user(employee)
 
             # redirect to the dashboard page after login
-            return redirect(url_for('home.players'))
+            return redirect(url_for('home.homepage'))
         # when login details are incorrect
         else:
             flash('Correo o contraseña erróneos.')
