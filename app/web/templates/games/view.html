@@ -1,0 +1,27 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+{% block title %}Create{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <div class="card-header">
+                <h2>{{ game.title }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-group">
+        <div class="card">
+            <div class="card-header">Detalles</div>
+            <div class="card-body">
+                Fecha creación {{ game.creation_date.strftime('%d-%m-%Y') }}
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">Creada por {{ game.master }}</div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
