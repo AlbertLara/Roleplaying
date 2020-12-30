@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  config:
+    build:
+      context: ../configuration
+      dockerfile: "Dockerfile"
+  web:
+    container_name: "web"
+    env_file:
+      - "../configuration/.env"
+    build:
+      context: "."
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    ports:
+    - "${DOCKER_WEB_PORT:-127.0.0.1:9000}:9000"
