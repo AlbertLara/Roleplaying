@@ -1,6 +1,6 @@
 from celery import Celery
 
-from app import app
+from services.web.project import app
 
 celery = Celery(
     'worker',
