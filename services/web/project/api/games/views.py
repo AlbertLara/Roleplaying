@@ -1,27 +1,18 @@
 from flask import redirect, url_for, abort, render_template
-from flask_login import login_required
+from flask_login import login_required, current_user
 from .forms import *
-from . import games
+from . import *
 import re
 from ...services.service import *
-
-
-def can_view(game_id):
-    member = Members.query.filter_by(game_id=game_id,user_id=current_user.id, approved=True).count()
-    if member == 0:
-        abort(403)
-
-def list_games_pending():
-    pass
+from ...token import *
 
 @games.route('/',methods=['GET','POST'])
 @login_required
 def user_games():
-    games = GameService.get_games_for_user()
+    games = GameService().get_games_for_user()
     form = NewGame()
     if form.validate_on_submit():
         return redirect(url_for('game.create'))
-
     return render_template('games/index.html', games=games,form=form, title="Games")
 
 
@@ -31,43 +22,40 @@ def user_games():
 #Crear una nueva partida
 def create():
     form = CreateGameForm()
-    sistemas = Sistema.query.filter_by(status='a').all()
-    values = [row.get_list() for row in sistemas]
+    values = SistemaService().get_active()
     form.Sistema.choices = values
     if form.validate_on_submit():
         title = form.title.data.lower()
         regex = "([a-zA-Z0-9]*)"
         x = re.findall(regex,title)
         game_key = '-'.join(list(filter(lambda item:item,x)))
-
         params = {'title':form.title.data,
                   'game_key':game_key,
+                  'description':form.description.data,
                   'max_players':form.max_players.data,
-                  'master_id':current_user.id,
+                  'masterid':current_user.id,
                   'sistema_id':form.Sistema.data,
                   'is_public':bool(form.is_public.data),
-                  'creation_date':datetime.now(),
-                  'update_date':datetime.now()}
-        GameService().create_game(params)
-
+                  'creation_date':datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                  'update_date':datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        game = Games(**params)
+        game.save_to_db()
+        member = Members(game_id=game.id,
+                         user_id=current_user.id,
+                         approved=True,
+                         role='GM')
+        member.save_to_db()
         return redirect(url_for('game.user_games'))
-    return render_template('games/create_game.html',form=form,title='Partida')
+    return render_template('games/create_game.html',form=form,title='Games')
 
 
 @games.route('/join', methods=['GET','POST'])
 @login_required
-#Lista de partidas que el usuario no se ha unido
 def new_games():
-    games = []
-    all_games = Games.query.all()
-    form = ViewGamesForm()
-    if form.validate_on_submit():
-        sistema = form.sistema.data.id
-        games = Games.query.filter(Games.sistema_id == sistema).all()
-    for game in all_games:
-        if not game.is_player and game.is_public:
-            games.append(game)
-    return render_template('games/new.html',games=games, form=form,title="Buscar Partida")
+    games = GameService().get_unjoined()
+    for game in games:
+        print(game['users'])
+    return render_template('games/new.html',games=games,title="Buscar Partida")
 
 
 
@@ -76,21 +64,14 @@ def new_games():
 def join(key):
     game_id = Games.query.filter_by(game_key=key).first().id
     member = Members(game_id=game_id,
-                     user_id=current_user.id)
-    db.session.add(member)
-    db.session.commit()
+                     user_id=current_user.id,
+                     role='viewer')
+    member.save_to_db()
     return redirect(url_for('game.new_games'))
 
 
-@games.route('/details/<int:id>', methods=['GET','POST'])
+@games.route('/details/<string:game_key>', methods=['GET','POST'])
 @login_required
-def view_game(id):
-    can_view(id)
-    game = Games.query.filter_by(id=id).first()
-    members = game.members
-    requests = []
-    for member in members:
-        if member.approved == None:
-            requests.append(member)
-    game.requests = requests
+def view_game(game_key):
+    game = Games.find_game_by_key(game_key)
     return render_template('games/view.html',title='', game=game)

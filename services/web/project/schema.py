@@ -1,7 +1,6 @@
 from .models import *
 from .db import ma
-from marshmallow import fields
-from marshmallow import Schema
+from marshmallow import Schema, fields
 from datetime import datetime
 
 class SistemaSchema(Schema):

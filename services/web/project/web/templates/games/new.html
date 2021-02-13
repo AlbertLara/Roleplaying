@@ -6,11 +6,11 @@
     <div class="row">
         <div class="col text-center">
             <div class="card-header">
-                <h1>Buscar partidas para unirte</h1>
+                <h1>Partidas disponibles</h1>
             </div>
         </div>
     </div>
-    <div id="accordion">
+<!--    <div id="accordion">
         <div class="card">
             <div class="card-header" id="headingOne">
                 <div data-toggle="collapse" data-target="#collapseOne" aria-expanded="false"
@@ -20,28 +20,31 @@
             </div>
             <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
                 <div class="card-body">
-                    {{ wtf.quick_form(form) }}
                 </div>
             </div>
         </div>
-    </div>
+    </div>-->
     {% if games %}
     <table class="table">
         <thead>
         <tr>
-            <th scope="col">Partida</th>
-            <th scope="col">Sistema</th>
             <th scope="col">DJ</th>
-            <th scope="col"></th>
+            <th scope="col">Nombre & Descripción</th>
+            <th>Jugando a</th>
+            <th scope="col">Meta</th>
         </tr>
         </thead>
         <tbody>
         {% for game in games %}
             <tr>
-                <td scope="row">{{ game.title }}</td>
-                <td scope="row">{{ game.sistema.nombre }}</td>
                 <td>{{ game.master }}</td>
-                <td><a class="connect" href="{{ url_for('game.join',key=game.game_key) }}">Unirse</a></td>
+                <td><a href="#">{{ game.title }}</a><br>
+                {{ game.description }}
+                </td>
+                <td>{{ game.sistema.nombre }}</td>
+                <td>
+                    Jugadores actuales: 0
+                </td>
             </tr>
         {% endfor %}
         </tbody>

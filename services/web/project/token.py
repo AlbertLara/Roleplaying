@@ -1,27 +1,26 @@
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import BadSignature, BadData
+from flask import jsonify, request, abort
+from flask_login import current_user
+from functools import wraps, update_wrapper
 from . import app
 
-def generate_confirmation_token(email):
-    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-    return serializer.dumps(email, salt=app.config['SECURITY_PASSWORD_SALT'])
+def admin_role_required(f):
+    @wraps(f)
+    def decorator(*args,**kwargs):
+        if not current_user.is_admin:
+            abort(400)
+        return f(*args,**kwargs)
+    return decorator
 
-def confirm_token(token, expiration=3600):
-    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-    data = {'email':'','expired':False}
-    try:
-        email = serializer.loads(
-            token,
-            salt=app.config['SECURITY_PASSWORD_SALT'],
-            max_age=expiration
-        )
+def check_role(f):
+    @wraps(f)
+    def decorator(*args,**kwargs):
 
-    except BadSignature as e:
-        if e.payload is not None:
-            try:
-                email = serializer.load_payload(e.payload)
-            except BadData as e:
-                pass
-        data['expired'] = True
-    data['email'] = email
-    return data
+        if not current_user.is_authenticated:
+            return jsonify({'message':'Unauthorized'}), 400
+        print(request.url_rule)
+        return f(*args, **kwargs)
+    return decorator
+
+

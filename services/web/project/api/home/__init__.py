@@ -1,5 +1,4 @@
 from flask import Blueprint
 
-home = Blueprint('home', __name__)
-
+blueprint = Blueprint('home', __name__)
 from . import views

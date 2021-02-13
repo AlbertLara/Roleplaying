@@ -15,6 +15,13 @@ class Configuration():
             elif v.lower() in ('true','false'):
                 value= v.lower() == 'true'
             data['APP'][key] = value
+        user_id = os.environ.get("POSTGRES_USER")
+        user_pwd = os.environ.get("POSTGRES_PWD")
+        host = os.environ.get("POSTGRES_HOST")
+        port = os.environ.get("POSTGRES_PORT")
+        db = os.environ.get("POSTGRES_DB")
+        data['APP']['JWT_BLACKLIST_TOKEN_CHECKS'] =os.environ.get('JWT_BLACKLIST_TOKEN_CHECKS').split(" ")
+        data['APP']['SQLALCHEMY_DATABASE_URI'] = f'postgresql+psycopg2://{user_id}:{user_pwd}@{host}:{port}/{db}'
         self.__data = data
 
     def get_query_params(self,key):

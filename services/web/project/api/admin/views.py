@@ -1,52 +1,40 @@
 # api/home/views.py
 from flask import render_template, abort
-from flask_login import login_required
+from flask_login import login_required, current_user
 from ...models import *
-from . import admin
+from . import *
+from .forms import *
 from ... import db
+from ...token import *
+
 def check_admin():
     if not current_user.is_admin:
         abort(403)
 
 
-@admin.route('/')
+@blueprint.route('/')
 @login_required
+@admin_role_required
 def admin_dashboard():
-    check_admin()
     template = render_template(template_name_or_list='admin/main.html',
                                title='Admin',
                                permission='admin')
     return template
 
-@admin.route('/Usuarios')
+@blueprint.route('/Usuarios')
 @login_required
+@admin_role_required
 def users():
-    check_admin()
     users = User.query.all()
+    forms = []
     for user in users:
-        user_id = user.id
-        groups = db.session.query(Members).filter_by(user_id=user_id).all()
-        print(groups)
-    template = render_template('admin/users.html',users=users,title='Usuarios')
-    return template
-
-@admin.route('/partidas')
-@login_required
-def partidas():
-    check_admin()
-    games = Games.query.all()
-    for game in games:
-        print(game.players)
-    template = render_template('admin/games.html',games=games, title='Partidas')
-    return template
-
-
-@admin.route('/sistemas')
-@login_required
-def sistemas():
-    check_admin()
-    systems = Sistema.query.all()
-    for sistema in systems:
-        print(sistema.games)
-    template = render_template('admin/sistemas.html',sistemas=systems,title='Sistemas')
+        user.default_active = f"{'checked' if user.active else ''}"
+        user.default_admin = f"{'checked' if user.is_admin else ''}"
+        user_form = UsersForm(obj=user)
+        user_form.active.default = user.default_active
+        user_form.is_admin.default = user.default_admin
+        forms.append(user_form)
+    print(forms)
+    print(users)
+    template = render_template('admin/users.html', forms=forms, title='Usuarios')
     return template

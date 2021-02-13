@@ -21,7 +21,7 @@
         <div class="card-body">
             {% if game.approved != None %}
             <ul class="list-group list-group-flush">
-                <li class="list-group-item"><a href="{{ url_for('game.view_game', id=game.id)}}" class="btn btn-primary">Ver</a></li>
+                <li class="list-group-item"><a href="{{ url_for('game.view_game', game_key=game.game_key)}}" class="btn btn-primary">Ver</a></li>
             </ul>
             {% else %}
             Esperando respuesta
