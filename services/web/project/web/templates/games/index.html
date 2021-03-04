@@ -1,0 +1,39 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+{% block title %}Partidas{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <div class="card-header">
+                <h1>Partidas</h1>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    {% if games %}
+    {% for game in games%}
+    <div class="card">
+        <div class="card-header">
+            <h3>{{ game.title }}</h3>
+        </div>
+        <div class="card-body">
+            {% if game.approved != None %}
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><a href="{{ url_for('game.view_game', id=game.id)}}" class="btn btn-primary">Ver</a></li>
+            </ul>
+            {% else %}
+            Esperando respuesta
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <div class="row">
+        <div class="col text-center">
+            {{ wtf.quick_form(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
