@@ -1,0 +1,35 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+{% block title %}Partidas{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <div class="card-header">
+                <h1>Amig@s</h1>
+            </div>
+        </div>
+    </div>
+    {% for friend in friends %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="float-start">{{ friend.user.username }}</h3>
+            <div class="float-end">
+                <i class="{{ friend.icon.class }}" title="{{ friend.icon.title }}"
+                    style="color:{{ friend.icon.color }}"
+                ></i>
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
+    <br>
+    {% if form %}
+    <div class="row">
+        <div class="col text-center">
+            {{ wtf.quick_form(form) }}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

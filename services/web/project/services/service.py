@@ -1,77 +1,75 @@
-from ..models import *
-from datetime import datetime
+from ..utils.models import *
+from ..utils.schema import *
 
 
+"""class Service():
+    name = ''
+    def __init__(self):
+        self.endpoint = os.environ.get('ENDPOINT')
+        self.session = session
+        self.url = f"{self.endpoint}/{self.name}"
+
+    def exist_record(self,payload:dict):
+        print(payload)
+        query = "&".join([f"{key}={value}" for key, value in payload.items()])
+        print(query)
+        url = f"{self.url}?{query}"
+        response = self.session.get(url)
+        return response.status_code == 200
+
+    def insert_data(self,payload):
+        print(self.url)
+        response = self.session.post(self.url,json=json.dumps(payload))
+        return response.status_code
+
+class UserService(Service):
+    name = 'users'
+    def verifyCredentials(self,credentials):
+        url = f"{self.url}/verifyUser?credentials={credentials}"
+        response = self.session.get(url)
+        status_code = response.status_code
+        data = {}
+        if status_code == 200:
+            data = response.json()
+        return {'status_code':status_code,'data':data}
 
 
-class UserService():
-    def __init__(self,**kwargs):
-        self.email = kwargs['email']
-        self.username = kwargs['username']
-        self.password = kwargs['password']
-        self.confirmed = kwargs['confirmed']
-        try:
-            self.is_admin = kwargs['is_admin']
-        except:
-            self.is_admin = False
-        self.create_user()
+class SistemaService(Service):
+    name = 'sistemas'
 
-    def create_user(self):
-        user_exists = db.session.query(User).filter_by(username=self.username).count()
-        if not user_exists:
-            user = User(email=self.email,
-                        username=self.username,
-                        password=self.password,
-                        is_admin=self.is_admin,
-                        confirmed=self.confirmed)
-            db.session.add(user)
-            db.session.commit()
-
+    def get_active(self):
+        url = f"{self.url}?status=a"
+        response = self.session.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            values = [(row['id'],row['nombre']) for row in data]
+            return values"""
 
 class SistemaService():
-    def __init__(self,**kwargs):
-        self.nombre = kwargs['nombre']
-        self.sKey = kwargs['sKey']
-        self.status = kwargs['status']
-        self.create_sistema()
-
-    def create_sistema(self):
-        exists = db.session.query(Sistema).filter_by(nombre=self.nombre).count() == 1
-        if not exists:
-            sistema = Sistema(nombre=self.nombre,
-                              sKey=self.sKey,
-                              status=self.status)
-            db.session.add(sistema)
-            db.session.commit()
+    def get_active(self):
+        sistemas = Sistema.get_by_status("a")
+        data = sistema_schema.dump(sistemas,many=True)
+        values = [(row['id'],row['nombre']) for row in data]
+        print(values)
+        return values
 
 class GameService():
-
-    @classmethod
     def get_games_for_user(self):
-        members = current_user.members
-        data = []
-
-        for member in members:
-            game = member.game
-            approved = member.approved
-            created = game.master_Id == current_user.id
-            game_data = {key:value for key, value in game.__dict__.items() if not str(key).startswith('_')}
-            obj = {'approved':approved,'created':created}
-            for key, value in game_data.items():
-                if isinstance(value, datetime):
-                    value = value.strftime('%d/%m/%Y')
-                obj[key] = str(value)
-                pass
-            data.append(obj)
+        userId = current_user.id
+        members = Members.query.filter_by(user_id=userId).all()
+        games = [member.game for member in members]
+        data = game_schema.dump(games,many=True)
         return data
 
-    def create_game(self,params):
-        game = Games(**params)
-        db.session.add(game)
-        db.session.commit()
-        author_id = params['master_Id']
-        member = Members(game_id=game.id,
-                         user_id=author_id,
-                         approved=True)
-        db.session.add(member)
-        db.session.commit()
+    def get_unjoined(self):
+        userId = current_user.id
+        all_games = Games.query.filter_by(is_public=True).all()
+        games = []
+        for game in all_games:
+            members = [member.user_id for member in game.members]
+            is_member = userId in members
+            if not is_member:
+                games.append(game)
+        data = game_member_schema.dump(games,many=True)
+        print(data)
+        return data

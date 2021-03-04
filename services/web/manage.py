@@ -1,13 +1,8 @@
-from project import create_app
+from project.application import create_full_app
 import os
-import logging
-from decouple import config as config_decouple
 
-ENV = 'LOCALHOST'
-if config_decouple('PRODUCTION',default=False):
-    ENV = 'PROD'
 
-app = create_app(ENV)
-if __name__== '__main__':
-    if app is not None:
-        app.run(host=os.environ.get('HOST'),port=os.environ.get('PORT'))
+app = create_full_app()
+
+if __name__ == "__main__":
+    app.run(host=os.getenv('HOST'),port=os.getenv('PORT'))

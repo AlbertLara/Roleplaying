@@ -1,9 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import PasswordField, StringField, SubmitField, ValidationError
+from wtforms import PasswordField, StringField, SubmitField, ValidationError, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, Regexp
-from ...models import User
-
-
+from ...utils.models import *
 class RegistrationForm(FlaskForm):
     email = StringField('Correo', validators=[DataRequired(), Email()])
     username = StringField('Usuario', validators=[DataRequired(), Regexp('^\w+$',message='Solamente se aceptan valores alfanumericos.')])
@@ -14,13 +12,16 @@ class RegistrationForm(FlaskForm):
     confirm_password = PasswordField('Confirma Contraseña')
     submit = SubmitField('Registrar')
 
-    def validate_email(self, field):
-        if User.query.filter_by(email=field.data).first():
-            raise ValidationError('Correo electrónico ya está en uso.')
 
     def validate_username(self, field):
-        if User.query.filter_by(username=field.data).first():
+        exists = User.query.filter_by(username=field.data).first()
+        if exists:
             raise ValidationError('Usuario ya está en uso.')
+
+    def validate_email(self, field):
+        exists = User.query.filter_by(email=field.data).first()
+        if exists:
+            raise ValidationError('Correo electrónico ya está en uso.')
 
 
 
