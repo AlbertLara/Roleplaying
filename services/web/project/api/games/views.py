@@ -4,7 +4,7 @@ from .forms import *
 from . import *
 import re
 from ...services.service import *
-from ...token import *
+from ...utils.models import *
 
 @games.route('/',methods=['GET','POST'])
 @login_required

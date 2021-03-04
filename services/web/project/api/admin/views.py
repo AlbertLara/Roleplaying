@@ -1,12 +1,11 @@
 # api/home/views.py
 from flask import render_template, abort
 from flask_login import login_required, current_user
-from ...models import *
+from ...utils.models import *
 from . import *
 from .forms import *
-from ... import db
-from ...token import *
-
+from ...utils import db
+from ...utils.token import *
 def check_admin():
     if not current_user.is_admin:
         abort(403)

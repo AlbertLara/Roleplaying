@@ -21,3 +21,6 @@ class UserSchema(Schema):
     username = fields.String()
     is_admin = fields.Boolean()
     active = fields.Boolean()
+
+class SendTask(FlaskForm):
+    submit = SubmitField('Crear Tarea')

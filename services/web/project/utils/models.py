@@ -1,11 +1,6 @@
-from werkzeug.security import generate_password_hash, check_password_hash
 from .db import db
-from passlib.hash import pbkdf2_sha256 as sha256
 from werkzeug.security import generate_password_hash, check_password_hash
-from itertools import groupby
-from flask_login import UserMixin
-import jwt
-import os
+from flask_login import UserMixin, current_user
 
 class User(UserMixin,db.Model):
     __tablename__ = 'User'
@@ -17,8 +12,9 @@ class User(UserMixin,db.Model):
     active = db.Column(db.Boolean, nullable=False, default=True)
     online = db.Column(db.Boolean, nullable=False, default=False)
     members = db.relationship('Members',backref='User',lazy=True,uselist=True)
-    a_friends = db.relationship('Friends',primaryjoin=lambda: User.id == Friends.friend_a_id,back_populates='friend_a')
-    b_friends = db.relationship('Friends',primaryjoin=lambda: User.id == Friends.friend_b_id,back_populates='friend_b')
+    a_friends = db.relationship('Friends',primaryjoin=lambda: User.id == Friends.friend_a_id)
+    b_friends = db.relationship('Friends',primaryjoin=lambda: User.id == Friends.friend_b_id)
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
@@ -42,6 +38,20 @@ class User(UserMixin,db.Model):
     @property
     def password(self):
         raise AttributeError('La contraseña no es un atributo legible')
+
+    @property
+    def friends(self):
+        my_friends = User.query.join(Friends,Friends.friend_b_id==User.id).filter(Friends.friend_a_id==self.id).with_entities(User, Friends.accepted).all()
+        im_their_friend = User.query.join(Friends,Friends.friend_a_id==User.id).filter(Friends.friend_b_id==self.id).with_entities(User,Friends.accepted).all()
+        all_friends = list(my_friends+im_their_friend)
+        friends = [{'user':friend[0],'accepted':friend[1]} for friend in all_friends]
+        return friends
+
+    @property
+    def friend_requests(self):
+        data = Friends.query.filter_by(friend_b_id=self.id).all()
+        users = [user.friend_a for user in data]
+        return []
 
     @password.setter
     def password(self,password):
@@ -72,12 +82,18 @@ class Friends(db.Model):
     __tablename__='Friends'
     id = db.Column(db.Integer, primary_key=True,nullable=False)
     friend_a_id = db.Column(db.ForeignKey('User.id'),nullable=False)
-    friend_a = db.relationship('User',primaryjoin=friend_a_id==User.id,
-                               back_populates='a_friends')
     friend_b_id = db.Column(db.ForeignKey('User.id'),nullable=False)
-    friend_b = db.relationship('User',primaryjoin=friend_a_id==User.id,
-                               back_populates='b_friends')
     accepted = db.Column(db.Boolean)
+
+    @property
+    def my_friend(self):
+        is_my_friend = self.friend_a_id == current_user.id
+        return is_my_friend
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
 
 
 class Group(db.Model):

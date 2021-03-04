@@ -1,5 +1,3 @@
-from .models import *
-from .db import ma
 from marshmallow import Schema, fields
 from datetime import datetime
 

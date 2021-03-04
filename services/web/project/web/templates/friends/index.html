@@ -10,6 +10,19 @@
             </div>
         </div>
     </div>
+    {% for friend in friends %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="float-start">{{ friend.user.username }}</h3>
+            <div class="float-end">
+                <i class="{{ friend.icon.class }}" title="{{ friend.icon.title }}"
+                    style="color:{{ friend.icon.color }}"
+                ></i>
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
     <br>
     {% if form %}
     <div class="row">

@@ -1,10 +1,7 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import PasswordField, StringField, SubmitField, ValidationError, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, Regexp
-from ...models import User
-import os
-
+from ...utils.models import *
 class RegistrationForm(FlaskForm):
     email = StringField('Correo', validators=[DataRequired(), Email()])
     username = StringField('Usuario', validators=[DataRequired(), Regexp('^\w+$',message='Solamente se aceptan valores alfanumericos.')])

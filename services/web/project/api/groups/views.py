@@ -2,9 +2,8 @@ from flask import redirect, url_for, abort, render_template
 from flask_login import login_required, current_user
 from .forms import *
 from . import *
-import re
-from ...services.service import *
-from ...token import *
+from ...utils.models import *
+
 
 @blueprint.route('/')
 @login_required

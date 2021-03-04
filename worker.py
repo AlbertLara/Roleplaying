@@ -1,13 +1,14 @@
-from celery import Celery
+import os
+import redis
+from rq import Worker, Queue, Connection
 
-from services.web.project import app
+listen = ['default']
 
-celery = Celery(
-    'worker',
-    broker=app.config['CELERY_BROKER_URL'],
-    backend=app.config['CELERY_RESULT_BACKEND']
-)
+redis_url = os.getenv('REDISTOGO_URL','redis://localhost:6379')
 
-@celery.task()
-def funct1(arg):
-    return False
+conn = redis.from_url(redis_url)
+
+if __name__=='__main__':
+    with Connection(conn):
+        worker = Worker(list(map(Queue,listen)))
+        worker.work()

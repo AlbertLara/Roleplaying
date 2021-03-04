@@ -2,9 +2,7 @@ from flask import flash, redirect, url_for, render_template
 from flask_login import login_required, login_user, logout_user, current_user
 from . import *
 from .forms import *
-from ...models import User, UserAtributes
-import base64
-from passlib.hash import pbkdf2_sha256 as sha256
+from ...utils.models import *
 from datetime import datetime
 import os
 endpoint = os.environ.get('ENDPOINT')

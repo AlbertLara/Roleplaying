@@ -6,42 +6,37 @@ services:
     image: postgres:12-alpine
     container_name: db
     env_file:
-      - ../configuration/.env.dev.db
+      - config/.env.dev.db
     ports:
       - '5432:5432'
     volumes:
     - ./pgdata:/var/lib/postgresql/data
     - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
-#  rest:
-#    build: ./services/restapi
-#    container_name: "rest"
-#    env_file:
-#      - ../configuration/.env.DEV_REST
-#    volumes:
-#      - ./services/restapi/:/usr/src/restapi/
-#      - ../configuration/.env.web_rest:/configuration/.env.web_rest
-#    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
-#    ports:
-#      - "8080:8080"
   web:
     build: ./services/web
-    container_name: "web"
+    container_name: web
+    command: python manage.py run -h 0.0.0.0
     env_file:
-      - ../configuration/.env.dev
+      - config/.env.dev
     volumes:
-    - ./services/web/:/usr/src/api/
+    - ./services/web/:/usr/src/app/
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     ports:
-      - "9000:9000"
+      - 9000:9000
+    depends_on:
+      - redis
   pgadmin:
     image: dpage/pgadmin4:4.18
     container_name: pgadmin
     restart: always
     env_file:
-      - ../configuration/.env.DEV_pgadmin
+      - config/.env.DEV_pgadmin
     volumes:
     - ./pgadmin_data:/var/lib/pgadmin
     ports:
     - "80:80"
     links:
       - "db:pgsql-server"
+  redis:
+    image: redis:6-alpine
+    container_name: redis

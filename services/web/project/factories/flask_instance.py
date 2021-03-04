@@ -1,31 +1,20 @@
 from flask import Flask, render_template, Response, jsonify
 from flask_bootstrap import Bootstrap
-from flask_migrate import Migrate
-from flask_mail import Mail
 from dotenv import load_dotenv
-from .db import login_manager, ma, db
+from ..utils.db import login_manager, ma, db
 import os
 import logging
-from .models import User
-import libgravatar
-app = Flask(__name__, template_folder='web/templates', static_folder='web/static')
-mail = Mail()
+from ..utils.models import User
 
 
-def create_app(ENV):
+def create_app():
+    app = Flask(__name__, template_folder='../web/templates', static_folder='../web/static')
+    ENV = os.environ.get('ENV')
     config_path = os.getenv("CONFIG_PATH")
     envfile = f"{config_path}/.env.{ENV}"
-
     load_dotenv(envfile)
-
-    from .config import Configuration
-
-    config = Configuration()
-    obj = config.get_app_config()
-    app.config.from_mapping(obj)
-
+    app.config.from_pyfile("../config/settings.py")
     ma.init_app(app)
-    mail.init_app(app)
     bootstrap = Bootstrap()
     bootstrap.init_app(app)
     with app.app_context():
@@ -36,35 +25,28 @@ def create_app(ENV):
         user.online = True
         user.save_to_db()
         return user
-
+    register_blueprint(app)
     login_manager.init_app(app)
     login_manager.login_message = 'Debes iniciar sesión para acceder a esta página.'
     login_manager.login_view = "auth.login"
     logging.basicConfig(level=logging.INFO)
-    register_blueprint(app)
     register_error_handlers(app)
     return app
 
+
 def register_blueprint(app):
-    from .api.admin import blueprint as admin_blueprint
-    from .api.auth import blueprint as auth_blueprint
-    from .api.home import blueprint as home_blueprint
-    from .api.groups import blueprint as group_blueprint
-    from .api.friends import blueprint as friend_blueprint
+    print(app)
+    from ..api.admin import blueprint as admin_blueprint
+    from ..api.auth import blueprint as auth_blueprint
+    from ..api.home import blueprint as home_blueprint
+    from ..api.groups import blueprint as group_blueprint
+    from ..api.friends import blueprint as friend_blueprint
 
     app.register_blueprint(home_blueprint)
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(admin_blueprint)
     app.register_blueprint(group_blueprint)
     app.register_blueprint(friend_blueprint)
-
-
-def update_user():
-    username = os.environ.get('USER_ID')
-    user = User.query.filter_by(username=username).first()
-    if user.password_hash == '':
-        user.password = os.environ.get('USER_PWD')
-        user.save_to_db()
 
 def register_error_handlers(app):
     @app.errorhandler(Exception)
