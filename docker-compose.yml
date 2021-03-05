@@ -13,7 +13,7 @@ services:
     - ./pgdata:/var/lib/postgresql/data
     - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
   web:
-    build: ./services/web
+    build: ./web
     container_name: web
     command: python manage.py run -h 0.0.0.0
     env_file:
