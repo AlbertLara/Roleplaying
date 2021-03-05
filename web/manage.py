@@ -5,4 +5,5 @@ import os
 app = create_full_app()
 
 if __name__ == "__main__":
-    app.run(host=os.getenv('HOST'),port=os.getenv('PORT'))
+    port = int(os.getenv("PORT"),5000)
+    app.run(host="0.0.0.0",port=port)
