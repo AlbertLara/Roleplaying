@@ -9,16 +9,13 @@ from ..utils.models import User
 
 def create_app():
     app = Flask(__name__, template_folder='../web/templates', static_folder='../web/static')
-    ENV = os.environ.get('ENV')
-    config_path = os.getenv("CONFIG_PATH")
-    envfile = f"{config_path}/.env.{ENV}"
-    load_dotenv(envfile)
     app.config.from_pyfile("../config/settings.py")
     ma.init_app(app)
     bootstrap = Bootstrap()
     bootstrap.init_app(app)
+    db.init_app(app)
     with app.app_context():
-        db.init_app(app)
+        db create_all()
     @login_manager.user_loader
     def load_user(user_id):
         user = User.query.get(int(user_id))

@@ -1,0 +1,7 @@
+build:
+  docker:
+    web: services/web/Dockerfile
+  config:
+    PORT: 9000
+run:
+  web: python manage.py run -h 0.0.0.0
