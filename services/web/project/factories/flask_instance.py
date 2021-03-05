@@ -1,6 +1,5 @@
 from flask import Flask, render_template, Response, jsonify
 from flask_bootstrap import Bootstrap
-from dotenv import load_dotenv
 from ..utils.db import login_manager, ma, db
 import os
 import logging
@@ -13,9 +12,9 @@ def create_app():
     ma.init_app(app)
     bootstrap = Bootstrap()
     bootstrap.init_app(app)
-    db.init_app(app)
     with app.app_context():
-        db create_all()
+        db.init_app(app)
+        db.create_all()
     @login_manager.user_loader
     def load_user(user_id):
         user = User.query.get(int(user_id))
