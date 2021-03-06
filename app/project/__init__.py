@@ -7,14 +7,14 @@ from .utils.models import User
 
 
 def create_app():
-    app = Flask(__name__, template_folder='./app/templates', static_folder='./app/static')
+    app = Flask(__name__, template_folder='web/templates', static_folder='web/static')
     app.config.from_pyfile("config/settings.py")
     ma.init_app(app)
     bootstrap = Bootstrap()
     bootstrap.init_app(app)
     with app.app_context():
         db.init_app(app)
-        #db.create_all()
+        db.create_all()
     @login_manager.user_loader
     def load_user(user_id):
         user = User.query.get(int(user_id))

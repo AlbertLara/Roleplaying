@@ -13,18 +13,14 @@ services:
     - ./pgdata:/var/lib/postgresql/data
     - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
   web:
-    build: app
+    build: ./app
     container_name: app
     command: python manage.py run -h 0.0.0.0
     env_file:
       - ./config/.env.dev
-    volumes:
-    - ./app/:/app/
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     ports:
       - 5000:5000
-    depends_on:
-      - redis
   pgadmin:
     image: dpage/pgadmin4:4.18
     container_name: pgadmin
@@ -37,6 +33,3 @@ services:
     - "80:80"
     links:
       - "db:pgsql-server"
-  redis:
-    image: redis:6-alpine
-    container_name: redis
