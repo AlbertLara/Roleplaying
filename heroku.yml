@@ -4,4 +4,4 @@ build:
   config:
     PORT: 9000
 run:
-  web: python manage.py run -h 0.0.0.0
+  web: python3 manage.py run -h 0.0.0.0
