@@ -31,17 +31,19 @@ def create_app():
 
 
 def register_blueprint(app):
-    from .api.admin import blueprint as admin_blueprint
-    from .api.auth import blueprint as auth_blueprint
     from .api.home import blueprint as home_blueprint
+    app.register_blueprint(home_blueprint)
+    """from .api.admin import blueprint as admin_blueprint
+    from .api.auth import blueprint as auth_blueprint
+    
     from .api.groups import blueprint as group_blueprint
     from .api.friends import blueprint as friend_blueprint
 
-    app.register_blueprint(home_blueprint)
+    
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(admin_blueprint)
     app.register_blueprint(group_blueprint)
-    app.register_blueprint(friend_blueprint)
+    app.register_blueprint(friend_blueprint)"""
 
 def register_error_handlers(app):
     @app.errorhandler(Exception)
