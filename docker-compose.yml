@@ -6,7 +6,7 @@ services:
     image: postgres:12-alpine
     container_name: db
     env_file:
-      - config/.env.dev.db
+      - ./config/.env.dev_db
     ports:
       - '5432:5432'
     volumes:
@@ -17,7 +17,7 @@ services:
     container_name: web
     command: python manage.py run -h 0.0.0.0
     env_file:
-      - config/.env.dev
+      - ./config/.env.dev
     volumes:
     - ./services/web/:/usr/src/app/
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
@@ -30,7 +30,7 @@ services:
     container_name: pgadmin
     restart: always
     env_file:
-      - config/.env.DEV_pgadmin
+      - ./config/.env.DEV_pgadmin
     volumes:
     - ./pgadmin_data:/var/lib/pgadmin
     ports:

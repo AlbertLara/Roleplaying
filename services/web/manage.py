@@ -1,8 +1,8 @@
-from project.application import create_full_app
+from project import create_app
 import os
 
 
-app = create_full_app()
+app = create_app()
 
 if __name__ == "__main__":
-    app.run(host=os.getenv('HOST'),port=os.getenv('PORT'))
+    app.run(host="0.0.0.0",port=os.getenv('PORT'))
