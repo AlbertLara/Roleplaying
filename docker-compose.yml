@@ -13,13 +13,13 @@ services:
     - ./pgdata:/var/lib/postgresql/data
     - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
   web:
-    build: ./web
-    container_name: web
+    build: app
+    container_name: app
     command: python manage.py run -h 0.0.0.0
     env_file:
       - ./config/.env.dev
     volumes:
-    - ./web/:/usr/src/app/
+    - ./app/:/usr/src/app/
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     ports:
       - 9000:9000

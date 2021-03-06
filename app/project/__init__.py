@@ -7,7 +7,7 @@ from .utils.models import User
 
 
 def create_app():
-    app = Flask(__name__, template_folder='./web/templates', static_folder='./web/static')
+    app = Flask(__name__, template_folder='./app/templates', static_folder='./app/static')
     app.config.from_pyfile("config/settings.py")
     ma.init_app(app)
     bootstrap = Bootstrap()

@@ -1,7 +1,11 @@
+setup:
+  addons:
+    - plan: heroku-postgresql
+      as: DATABASE
 build:
   docker:
-    web: web/Dockerfile
+    web: app/Dockerfile
   config:
     PORT: 9000
 run:
-  web: python3 manage.py run -h 0.0.0.0
+  web: python manage.py run -h 0.0.0.0

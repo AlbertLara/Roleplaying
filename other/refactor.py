@@ -13,6 +13,6 @@ for row in data:
 
 print(obj)
 
-outfile = open('./services/web/project/config/settings.json','w')
+outfile = open('./services/app/project/config/settings.json','w')
 json.dump(obj,outfile)
 outfile.close()
