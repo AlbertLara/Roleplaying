@@ -1,6 +1,6 @@
 build:
   docker:
-    web: services/web/Dockerfile
+    web: web/Dockerfile
   config:
     PORT: 9000
 run:
