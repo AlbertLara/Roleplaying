@@ -5,7 +5,7 @@ import os
 import logging
 from .utils.models import User
 
-app = Flask(__name__, template_folder='./web/templates', static_folder='./web/static')
+app = Flask(__name__, template_folder='web/templates', static_folder='web/static')
 
 def create_app():
     app.config.from_pyfile("config/settings.py")
