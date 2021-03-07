@@ -12,7 +12,7 @@ class User(UserMixin,db.Model):
     active = db.Column(db.Boolean, nullable=False, default=True)
     online = db.Column(db.Boolean, nullable=False, default=False)
     created_on = db.Column(db.String(255), index=False,unique=False,nullable=True)
-    last_login = db.Column(db.String(255), index=False, unique=False, nullable=False)
+    last_login = db.Column(db.String(255), index=False, unique=False, nullable=True)
     members = db.relationship('Members',backref='User',lazy=True,uselist=True)
     a_friends = db.relationship('Friends',primaryjoin=lambda: User.id == Friends.friend_a_id)
     b_friends = db.relationship('Friends',primaryjoin=lambda: User.id == Friends.friend_b_id)
