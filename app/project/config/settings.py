@@ -1,4 +1,5 @@
 import os
+import redis
 from distutils.util import strtobool
 
 ENV = os.getenv('ENV')
@@ -9,6 +10,9 @@ SQLALCHEMY_TRACK_MODIFICATIONS = bool(os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS'
 SECURITY_PASSWORD_SALT = os.getenv('SECURITY_PASSWORD_SALT')
 JWT_BLACKLIST_TOKEN_CHECKS = os.getenv('JWT_BLACKLIST_TOKEN_CHECKS').split(" ")
 SQLALCHEMY_DATABASE_URI =os.getenv('DATABASE_URL')
+
+SESSION_TYPE = os.getenv('SESSION_TYPE')
+SESSION_REDIS = redis.from_url(os.getenv('SESSION_REDIS'))
 
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/0')
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL

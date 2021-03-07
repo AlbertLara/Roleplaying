@@ -1,8 +1,7 @@
-from flask import redirect, url_for, abort, render_template, current_app, request
-from flask_login import login_required, current_user
+from flask import redirect, url_for, abort, render_template, session, sessions
+from flask_login import login_required
 from .forms import *
 from . import *
-from flask_socketio import send, emit
 from ...services.service import *
 from ...utils.models import *
 
@@ -11,6 +10,7 @@ from ...utils.models import *
 def index():
     form = NewFriend()
     friends = current_user.friends
+    print(session)
     for friend in friends:
         obj = {'class': ['fas', 'fa-lg'],
                'title': '',
@@ -33,6 +33,10 @@ def index():
 def send_request():
     form = SendRequest()
     if form.validate_on_submit():
+        friend_b = User.query.get(int(form.users.data))
+        if friend_b.online:
+            print(friend_b.__dict__)
+
         """friend_b = User.query.filter_by(id=int(form.users.data)).first()
         friends = Friends(friend_a_id=current_user.id,
                           friend_b_id=friend_b.id)

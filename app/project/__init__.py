@@ -1,6 +1,6 @@
-from flask import Flask, render_template, Response, jsonify, session, copy_current_request_context
+from flask import Flask, render_template, Response, jsonify, copy_current_request_context
 from flask_bootstrap import Bootstrap
-from .utils.db import login_manager, ma, db
+from .utils.db import login_manager, ma, db, session
 import os
 import logging
 from .utils.models import User
@@ -12,22 +12,16 @@ def create_app():
     ma.init_app(app)
     bootstrap = Bootstrap()
     bootstrap.init_app(app)
+    session.init_app(app)
     with app.app_context():
         db.init_app(app)
         db.create_all()
-
-    @app.context_processor
-    def inject_variables():
-        return dict(domain=os.getenv('DOMAIN'))
-
     @login_manager.user_loader
     def load_user(user_id):
         user = User.query.get(int(user_id))
         user.online = True
         user.save_to_db()
         return user
-    resp = Response()
-    resp.headers['Access-Control-Allow-Origin'] = '*'
     register_blueprint(app)
     login_manager.init_app(app)
     login_manager.login_message = 'Debes iniciar sesión para acceder a esta página.'

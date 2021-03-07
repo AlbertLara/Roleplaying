@@ -11,13 +11,18 @@ services:
       - '5432:5432'
     volumes:
     - ./pgdata:/var/lib/postgresql/data
-    - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    - ./other/schema.sql:/docker-entrypoint-initdb.d/schema.sql
   web:
     build: ./app
     container_name: app
-    command: python main.py
+    command: python main.py run -h 0.0.0.0
     env_file:
       - ./config/.env.dev
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     ports:
       - 5000:5000
+  redis:
+    image: redis:6-alpine
+    container_name: redis
+    ports:
+    - 6379:6379

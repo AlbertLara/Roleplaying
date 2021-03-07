@@ -18,8 +18,5 @@ email-validator==1.1.2
 requests
 PyJWT==1.4.2
 passlib
-flask-socketio
-flask-cors
-Flask_SocketIO
-python-socketio
-python-engineio
+flask-session
+redis
