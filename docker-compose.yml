@@ -15,7 +15,7 @@ services:
   web:
     build: ./app
     container_name: app
-    command: python main.py run -h 0.0.0.0
+    command: python main.py
     env_file:
       - ./config/.env.dev
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"

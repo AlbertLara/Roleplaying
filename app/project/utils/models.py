@@ -18,11 +18,12 @@ class User(UserMixin,db.Model):
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+
     @classmethod
-    def find_by_id(cls,id):
+    def find_by_id(cls, id):
         return cls.query.filter_by(id=id).first()
 
-    def update(self,data:dict):
+    def update(self, data:dict):
         if 'email' in data.keys():
             self.email = data.get('email')
         if 'username' in data.keys():
@@ -41,28 +42,28 @@ class User(UserMixin,db.Model):
 
     @property
     def friends(self):
-        my_friends = User.query.join(Friends,Friends.friend_b_id==User.id).filter(Friends.friend_a_id==self.id).with_entities(User, Friends.accepted).all()
-        im_their_friend = User.query.join(Friends,Friends.friend_a_id==User.id).filter(Friends.friend_b_id==self.id).with_entities(User,Friends.accepted).all()
+        my_friends = User.query.join(Friends, Friends.friend_b_id == User.id).filter(Friends.friend_a_id == self.id).with_entities(User, Friends.accepted).all()
+        im_their_friend = User.query.join(Friends, Friends.friend_a_id == User.id).filter(Friends.friend_b_id == self.id, Friends.accepted in (True, False)).with_entities(User, Friends.accepted).all()
         all_friends = list(my_friends+im_their_friend)
-        friends = [{'user':friend[0],'accepted':friend[1]} for friend in all_friends]
+        friends = [{'user': friend[0], 'accepted': friend[1]} for friend in all_friends]
         return friends
 
     @property
     def friend_requests(self):
         data = Friends.query.filter_by(friend_b_id=self.id).all()
         users = [user.friend_a for user in data]
-        return []
+        return users
 
     @password.setter
-    def password(self,password):
+    def password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
     @classmethod
-    def find_user(cls,username,email):
-        return cls.query.filter((cls.username==username) | (cls.email==email)).first()
+    def find_user(cls,username, email):
+        return cls.query.filter((cls.username == username) | (cls.email == email)).first()
 
     def __repr__(self):
         return '<User: {}>'.format(self.username)
@@ -84,6 +85,7 @@ class Friends(db.Model):
     friend_a_id = db.Column(db.ForeignKey('User.id'),nullable=False)
     friend_b_id = db.Column(db.ForeignKey('User.id'),nullable=False)
     accepted = db.Column(db.Boolean)
+    friend_a = db.relationship('User', primaryjoin=lambda: Friends.friend_a_id == User.id)
 
     @property
     def my_friend(self):

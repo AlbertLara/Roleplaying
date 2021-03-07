@@ -1,10 +1,9 @@
-from flask import redirect, url_for, abort, render_template, current_app
+from flask import redirect, url_for, abort, render_template, current_app, request
 from flask_login import login_required, current_user
 from .forms import *
 from . import *
+from flask_socketio import send, emit
 from ...services.service import *
-import redis
-from celery import Celery
 from ...utils.models import *
 
 @blueprint.route('/', methods=['GET','POST'])
@@ -25,20 +24,20 @@ def index():
         obj['class'] = " ".join(obj['class'])
         friend['icon'] = obj
     if form.validate_on_submit():
-        return redirect(url_for('friends.send'))
+        return redirect(url_for('friends.send_request'))
     template = render_template('friends/index.html',title='Amigos',friends=friends, form=form)
     return template
 
 @blueprint.route('/send',methods=['GET','POST'])
 @login_required
-def send():
+def send_request():
     form = SendRequest()
     if form.validate_on_submit():
-        friend_b = User.query.filter_by(id=int(form.users.data)).first()
+        """friend_b = User.query.filter_by(id=int(form.users.data)).first()
         friends = Friends(friend_a_id=current_user.id,
                           friend_b_id=friend_b.id)
-        friends.save_to_db()
-        return redirect(url_for('friends.index'))
+        friends.save_to_db()"""
+        return redirect(url_for('friends.send_request'))
     users = [(user.id, user.username) for user in User.query.filter(User.id!=current_user.id).all() if user not in current_user.friends]
     form.users.choices = users
     template = render_template('friends/send.html',title='Amigos', form=form)

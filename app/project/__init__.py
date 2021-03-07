@@ -1,13 +1,13 @@
-from flask import Flask, render_template, Response, jsonify
+from flask import Flask, render_template, Response, jsonify, session, copy_current_request_context
 from flask_bootstrap import Bootstrap
 from .utils.db import login_manager, ma, db
 import os
 import logging
 from .utils.models import User
 
+app = Flask(__name__, template_folder='./web/templates', static_folder='./web/static')
 
 def create_app():
-    app = Flask(__name__, template_folder='web/templates', static_folder='web/static')
     app.config.from_pyfile("config/settings.py")
     ma.init_app(app)
     bootstrap = Bootstrap()
@@ -15,12 +15,19 @@ def create_app():
     with app.app_context():
         db.init_app(app)
         db.create_all()
+
+    @app.context_processor
+    def inject_variables():
+        return dict(domain=os.getenv('DOMAIN'))
+
     @login_manager.user_loader
     def load_user(user_id):
         user = User.query.get(int(user_id))
         user.online = True
         user.save_to_db()
         return user
+    resp = Response()
+    resp.headers['Access-Control-Allow-Origin'] = '*'
     register_blueprint(app)
     login_manager.init_app(app)
     login_manager.login_message = 'Debes iniciar sesión para acceder a esta página.'
@@ -28,7 +35,6 @@ def create_app():
     logging.basicConfig(level=logging.INFO)
     register_error_handlers(app)
     return app
-
 
 def register_blueprint(app):
     from .api.home import blueprint as home_blueprint
