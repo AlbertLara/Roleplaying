@@ -70,17 +70,6 @@ class User(UserMixin,db.Model):
     def __repr__(self):
         return '<User: {}>'.format(self.username)
 
-class UserAtributes(db.Model):
-    __tablename__ = 'UserAtributes'
-    id = db.Column(db.Integer, primary_key=True,nullable=False)
-    userid= db.Column(db.Integer, nullable=False)
-    atribute_name = db.Column(db.String(60),unique=True)
-    atribute_value = db.Column(db.String(60),unique=True)
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
 class Friends(db.Model):
     __tablename__='Friends'
     id = db.Column(db.Integer, primary_key=True,nullable=False)

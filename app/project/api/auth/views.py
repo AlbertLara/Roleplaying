@@ -18,10 +18,6 @@ def register():
                     password=form.password.data,
                     created_on=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         user.save_to_db()
-        useratributes = UserAtributes(userid=user.id,
-                                      atribute_name='creationDate',
-                                      atribute_value=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-        useratributes.save_to_db()
         return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html', form=form, title='Register')

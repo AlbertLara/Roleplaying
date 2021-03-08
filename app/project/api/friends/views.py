@@ -36,11 +36,9 @@ def send_request():
         friend_b = User.query.get(int(form.users.data))
         if friend_b.online:
             print(friend_b.__dict__)
-
-        """friend_b = User.query.filter_by(id=int(form.users.data)).first()
         friends = Friends(friend_a_id=current_user.id,
                           friend_b_id=friend_b.id)
-        friends.save_to_db()"""
+        friends.save_to_db()
         return redirect(url_for('friends.send_request'))
     users = [(user.id, user.username) for user in User.query.filter(User.id!=current_user.id).all() if user not in current_user.friends]
     form.users.choices = users
