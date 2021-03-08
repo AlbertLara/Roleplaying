@@ -1,5 +1,4 @@
 import os
-import redis
 from distutils.util import strtobool
 
 ENV = os.getenv('ENV')

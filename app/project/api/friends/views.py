@@ -1,4 +1,4 @@
-from flask import redirect, url_for, abort, render_template, session, sessions
+from flask import redirect, url_for, abort, render_template
 from flask_login import login_required
 from .forms import *
 from . import *
@@ -10,7 +10,6 @@ from ...utils.models import *
 def index():
     form = NewFriend()
     friends = current_user.friends
-    print(session)
     for friend in friends:
         obj = {'class': ['fas', 'fa-lg'],
                'title': '',
