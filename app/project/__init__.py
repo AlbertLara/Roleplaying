@@ -1,6 +1,6 @@
 from flask import Flask, render_template, Response, jsonify, copy_current_request_context
 from flask_bootstrap import Bootstrap
-from .utils.db import login_manager, ma, db, session
+from .utils.db import login_manager, ma, db
 import os
 import logging
 from .utils.models import User
@@ -12,7 +12,6 @@ def create_app():
     ma.init_app(app)
     bootstrap = Bootstrap()
     bootstrap.init_app(app)
-    session.init_app(app)
     with app.app_context():
         db.init_app(app)
         db.create_all()
