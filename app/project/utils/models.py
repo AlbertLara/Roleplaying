@@ -9,7 +9,7 @@ class User(UserMixin,db.Model):
     username = db.Column(db.String(60), index=True, unique=True,nullable=False)
     password_hash = db.Column(db.String(128))
     is_admin = db.Column(db.Boolean, default=False)
-    active = db.Column(db.Boolean, nullable=False, default=True)
+    active = db.Column(db.Boolean, nullable=False, default=False)
     online = db.Column(db.Boolean, nullable=False, default=False)
     created_on = db.Column(db.String(255), index=False,unique=False,nullable=True)
     last_login = db.Column(db.String(255), index=False, unique=False, nullable=True)
