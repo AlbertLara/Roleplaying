@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response, jsonify, copy_current_request_context
+from flask import Flask, render_template, Response, jsonify
 from flask_bootstrap import Bootstrap
 from .utils.db import login_manager, ma, db
 import os
@@ -27,6 +27,7 @@ def create_app():
     login_manager.login_view = "auth.login"
     logging.basicConfig(level=logging.INFO)
     register_error_handlers(app)
+    print("Registered")
     return app
 
 def register_blueprint(app):
