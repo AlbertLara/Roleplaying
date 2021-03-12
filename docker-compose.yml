@@ -11,32 +11,18 @@ services:
       - '5432:5432'
     volumes:
     - ./pgdata:/var/lib/postgresql/data
-    - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    - ./other/schema.sql:/docker-entrypoint-initdb.d/schema.sql
   web:
-    build: ./services/web
-    container_name: web
-    command: python manage.py run -h 0.0.0.0
+    build: ./app
+    container_name: app
+    command: python main.py run -h 0.0.0.0
     env_file:
       - ./config/.env.dev
-    volumes:
-    - ./services/web/:/usr/src/app/
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     ports:
-      - 9000:9000
-    depends_on:
-      - redis
-  pgadmin:
-    image: dpage/pgadmin4:4.18
-    container_name: pgadmin
-    restart: always
-    env_file:
-      - ./config/.env.DEV_pgadmin
-    volumes:
-    - ./pgadmin_data:/var/lib/pgadmin
-    ports:
-    - "80:80"
-    links:
-      - "db:pgsql-server"
+      - 5000:5000
   redis:
     image: redis:6-alpine
     container_name: redis
+    ports:
+    - 6379:6379

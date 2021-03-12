@@ -1,4 +1,4 @@
-from flask import flash, redirect, url_for, render_template
+from flask import flash, redirect, url_for, render_template, session
 from flask_login import login_required, login_user, logout_user, current_user
 from . import *
 from .forms import *
@@ -12,14 +12,12 @@ def register():
     form = RegistrationForm()
 
     if form.validate_on_submit():
+
         user = User(email=form.email.data,
                     username=form.username.data,
-                    password=form.password.data)
+                    password=form.password.data,
+                    created_on=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         user.save_to_db()
-        useratributes = UserAtributes(userid=user.id,
-                                      atribute_name='creationDate',
-                                      atribute_value=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-        useratributes.save_to_db()
         return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html', form=form, title='Register')
@@ -35,7 +33,8 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is not None and user.verify_password(form.password.data):
-
+            user.last_login = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            user.save_to_db()
             login_user(user)
             return redirect(url_for('home.homepage'))
     # load login template
@@ -56,6 +55,7 @@ def logout():
     user = User.query.get(int(current_user.id))
     user.online = False
     user.save_to_db()
+
     logout_user()
     flash('You have successfully been logged out.')
     # redirect to the login page

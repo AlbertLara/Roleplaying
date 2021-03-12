@@ -10,12 +10,12 @@
             <a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
     </li>
+    {% if current_user.friend_requests|count >0 %}
     <li class="nav-item me-3 me-lg-1">
         <a class="nav-link" href="#" >
             <span><i class="fas fa-users fa-lg"></i></span>
-            {% if current_user.friend_requests|count >0 %}
             <span class="badge rounded-pill badge-notification bg-danger">{{ current_user.friend_requests|count }}</span>
-            {% endif %}
         </a>
     </li>
+    {% endif %}
 </ul>

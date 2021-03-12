@@ -5,16 +5,16 @@ import os
 import logging
 from .utils.models import User
 
+app = Flask(__name__, template_folder='web/templates', static_folder='web/static')
 
 def create_app():
-    app = Flask(__name__, template_folder='./web/templates', static_folder='./web/static')
     app.config.from_pyfile("config/settings.py")
     ma.init_app(app)
     bootstrap = Bootstrap()
     bootstrap.init_app(app)
     with app.app_context():
         db.init_app(app)
-        #db.create_all()
+        db.create_all()
     @login_manager.user_loader
     def load_user(user_id):
         user = User.query.get(int(user_id))
@@ -29,15 +29,16 @@ def create_app():
     register_error_handlers(app)
     return app
 
-
 def register_blueprint(app):
+    from .api.home import blueprint as home_blueprint
+    app.register_blueprint(home_blueprint)
     from .api.admin import blueprint as admin_blueprint
     from .api.auth import blueprint as auth_blueprint
-    from .api.home import blueprint as home_blueprint
+
     from .api.groups import blueprint as group_blueprint
     from .api.friends import blueprint as friend_blueprint
 
-    app.register_blueprint(home_blueprint)
+
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(admin_blueprint)
     app.register_blueprint(group_blueprint)

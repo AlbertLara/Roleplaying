@@ -9,8 +9,10 @@ class User(UserMixin,db.Model):
     username = db.Column(db.String(60), index=True, unique=True,nullable=False)
     password_hash = db.Column(db.String(128))
     is_admin = db.Column(db.Boolean, default=False)
-    active = db.Column(db.Boolean, nullable=False, default=True)
+    active = db.Column(db.Boolean, nullable=False, default=False)
     online = db.Column(db.Boolean, nullable=False, default=False)
+    created_on = db.Column(db.String(255), index=False,unique=False,nullable=True)
+    last_login = db.Column(db.String(255), index=False, unique=False, nullable=True)
     members = db.relationship('Members',backref='User',lazy=True,uselist=True)
     a_friends = db.relationship('Friends',primaryjoin=lambda: User.id == Friends.friend_a_id)
     b_friends = db.relationship('Friends',primaryjoin=lambda: User.id == Friends.friend_b_id)
@@ -18,11 +20,12 @@ class User(UserMixin,db.Model):
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+
     @classmethod
-    def find_by_id(cls,id):
+    def find_by_id(cls, id):
         return cls.query.filter_by(id=id).first()
 
-    def update(self,data:dict):
+    def update(self, data:dict):
         if 'email' in data.keys():
             self.email = data.get('email')
         if 'username' in data.keys():
@@ -41,42 +44,31 @@ class User(UserMixin,db.Model):
 
     @property
     def friends(self):
-        my_friends = User.query.join(Friends,Friends.friend_b_id==User.id).filter(Friends.friend_a_id==self.id).with_entities(User, Friends.accepted).all()
-        im_their_friend = User.query.join(Friends,Friends.friend_a_id==User.id).filter(Friends.friend_b_id==self.id).with_entities(User,Friends.accepted).all()
+        my_friends = User.query.join(Friends, Friends.friend_b_id == User.id).filter(Friends.friend_a_id == self.id).with_entities(User, Friends.accepted).all()
+        im_their_friend = User.query.join(Friends, Friends.friend_a_id == User.id).filter(Friends.friend_b_id == self.id, Friends.accepted in (True, False)).with_entities(User, Friends.accepted).all()
         all_friends = list(my_friends+im_their_friend)
-        friends = [{'user':friend[0],'accepted':friend[1]} for friend in all_friends]
+        friends = [{'user': friend[0], 'accepted': friend[1]} for friend in all_friends]
         return friends
 
     @property
     def friend_requests(self):
         data = Friends.query.filter_by(friend_b_id=self.id).all()
         users = [user.friend_a for user in data]
-        return []
+        return users
 
     @password.setter
-    def password(self,password):
+    def password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
     @classmethod
-    def find_user(cls,username,email):
-        return cls.query.filter((cls.username==username) | (cls.email==email)).first()
+    def find_user(cls,username, email):
+        return cls.query.filter((cls.username == username) | (cls.email == email)).first()
 
     def __repr__(self):
         return '<User: {}>'.format(self.username)
-
-class UserAtributes(db.Model):
-    __tablename__ = 'UserAtributes'
-    id = db.Column(db.Integer, primary_key=True,nullable=False)
-    userid= db.Column(db.Integer, nullable=False)
-    atribute_name = db.Column(db.String(60),unique=True)
-    atribute_value = db.Column(db.String(60),unique=True)
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
 
 class Friends(db.Model):
     __tablename__='Friends'
@@ -84,6 +76,7 @@ class Friends(db.Model):
     friend_a_id = db.Column(db.ForeignKey('User.id'),nullable=False)
     friend_b_id = db.Column(db.ForeignKey('User.id'),nullable=False)
     accepted = db.Column(db.Boolean)
+    friend_a = db.relationship('User', primaryjoin=lambda: Friends.friend_a_id == User.id)
 
     @property
     def my_friend(self):
