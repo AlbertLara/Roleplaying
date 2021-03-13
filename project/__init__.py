@@ -1,9 +1,12 @@
 from flask import Flask, render_template, Response, jsonify
 from flask_bootstrap import Bootstrap
 from .utils.db import login_manager, ma, db
+from flask_login import user_logged_out
 import os
 import logging
 from .utils.models import User
+from datetime import timedelta
+
 
 app = Flask(__name__, template_folder='web/templates', static_folder='web/static')
 
@@ -15,6 +18,7 @@ def create_app():
     with app.app_context():
         db.init_app(app)
         db.create_all()
+
     @login_manager.user_loader
     def load_user(user_id):
         user = User.query.get(int(user_id))

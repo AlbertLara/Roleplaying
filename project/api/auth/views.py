@@ -16,7 +16,8 @@ def register():
         user = User(email=form.email.data,
                     username=form.username.data,
                     password=form.password.data,
-                    created_on=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                    created_on=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    active=False)
         user.save_to_db()
         return redirect(url_for('auth.login'))
 
