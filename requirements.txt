@@ -18,6 +18,5 @@ email-validator==1.1.2
 requests
 PyJWT==1.4.2
 passlib
-Flask-Mail
 redis==3.5.3
 rq==1.4.2
