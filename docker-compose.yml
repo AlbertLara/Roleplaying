@@ -9,11 +9,9 @@ services:
       - ./config/.env.dev_db
     ports:
       - '5432:5432'
-    volumes:
-    - ./pgdata:/var/lib/postgresql/data
-    - ./other/schema.sql:/docker-entrypoint-initdb.d/schema.sql
   web:
     build: .
+    image: web
     container_name: app
     command: python main.py run -h 0.0.0.0
     env_file:
@@ -21,8 +19,19 @@ services:
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     ports:
       - 5000:5000
+    depends_on:
+      - db
+      - redis
+  worker:
+    image: web
+    command: python main.py run_worker
+    container_name: worker1
+    env_file:
+      - ./config/.env.dev
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    depends_on:
+      - db
+      - redis
   redis:
-    image: redis:6-alpine
+    image: redis:6.0.5-alpine
     container_name: redis
-    ports:
-    - 6379:6379

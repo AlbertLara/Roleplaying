@@ -1,6 +1,5 @@
 from flask import Flask, render_template, Response, jsonify
-from flask_bootstrap import Bootstrap
-from .utils.db import login_manager, ma, db
+from .utils.db import login_manager, ma, db, mail, bootstrap
 from flask_login import user_logged_out
 import os
 import logging
@@ -8,12 +7,13 @@ from .utils.models import User
 from datetime import timedelta
 
 
-app = Flask(__name__, template_folder='web/templates', static_folder='web/static')
 
 def create_app():
+    app = Flask(__name__, template_folder='web/templates', static_folder='web/static')
     app.config.from_pyfile("config/settings.py")
     ma.init_app(app)
-    bootstrap = Bootstrap()
+    mail.init_app(app)
+
     bootstrap.init_app(app)
     with app.app_context():
         db.init_app(app)
@@ -31,6 +31,7 @@ def create_app():
     login_manager.login_view = "auth.login"
     logging.basicConfig(level=logging.INFO)
     register_error_handlers(app)
+    app.shell_context_processor({'app': app, 'db': db})
     return app
 
 def register_blueprint(app):

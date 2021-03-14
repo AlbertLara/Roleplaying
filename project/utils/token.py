@@ -2,7 +2,8 @@ from flask import jsonify, request, abort
 from flask_login import current_user
 from functools import wraps, update_wrapper
 from itsdangerous import URLSafeTimedSerializer
-from .. import app
+from flask import current_app  as app
+
 def admin_role_required(f):
     @wraps(f)
     def decorator(*args,**kwargs):
