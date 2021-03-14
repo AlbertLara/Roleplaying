@@ -2,6 +2,7 @@ import os
 from distutils.util import strtobool
 
 ENV = os.getenv('ENV')
+PORT = os.getenv('PORT')
 FLASK_ENV = os.getenv('FLASK_ENV')
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = bool(os.getenv('DEBUG'))
