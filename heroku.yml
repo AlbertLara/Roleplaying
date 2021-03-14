@@ -1,4 +1,9 @@
+setup:
+  config:
+    PORT: 5000
 build:
+  docker:
+    web: Dockerfile
   config:
     PORT: 5000
 run:
