@@ -28,5 +28,9 @@ def run_worker():
         worker = Worker(app.config['QUEUES'])
         worker.work()
 
+@cli.command('run_app')
+def run():
+    app.run(host='0.0.0.0', port=os.getenv('PORT'))
+
 if __name__ == "__main__":
     cli()
