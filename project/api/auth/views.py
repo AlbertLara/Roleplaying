@@ -4,6 +4,7 @@ from rq import Queue, Connection
 import redis
 from . import *
 from .forms import *
+from ...utils.db import db
 from ...utils.models import *
 from ...utils.token import generate_confirmation_token, confirm_token
 from ...utils.email import send_email
@@ -16,20 +17,19 @@ def register():
     form = RegistrationForm()
 
     if form.validate_on_submit():
-
-        user = User(email=form.email.data,
-                    username=form.username.data,
-                    password=form.password.data,
-                    confirmed=False)
-        user.save_to_db()
-        token = generate_confirmation_token(user.email)
-        confirm_url = url_for('auth.confirm_email', token=token, _external=True)
-        html = render_template('auth/activate.html', confirm_url=confirm_url)
-        subject = "Confirma tu email"
-        redis_url = current_app.config['REDIS_URL']
-        with Connection(redis.from_url(redis_url)):
-            q = Queue()
-            q.enqueue(send_email, user.email, subject, html)
+        try:
+            user = User(email=form.email.data,username=form.username.data,password=form.password.data,confirmed=False)
+            user.save_to_db()
+            token = generate_confirmation_token(user.email)
+            confirm_url = url_for('auth.confirm_email', token=token, _external=True)
+            html = render_template('auth/activate.html', confirm_url=confirm_url)
+            subject = "Confirma tu email"
+            redis_url = current_app.config['REDIS_URL']
+            with Connection(redis.from_url(redis_url)):
+              q = Queue()
+              q.enqueue(send_email, user.email, subject, html)
+        except:
+            db.session.rollback()
         return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html', form=form, title='Register')
