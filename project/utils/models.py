@@ -1,6 +1,9 @@
 from .db import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, current_user
+from flask import current_app
+import redis
+import rq
 
 class User(UserMixin,db.Model):
     __tablename__ = 'User'
@@ -15,6 +18,14 @@ class User(UserMixin,db.Model):
     members = db.relationship('Members',backref='User',lazy=True,uselist=True)
     a_friends = db.relationship('Friends',primaryjoin=lambda: User.id == Friends.friend_a_id)
     b_friends = db.relationship('Friends',primaryjoin=lambda: User.id == Friends.friend_b_id)
+
+    def __init__(self, email, username, password, confirmed, active=False):
+        self.email = email
+        self.username = username
+        self.password = password
+        self.confirmed = confirmed
+        self.active = active
+        pass
 
     def save_to_db(self):
         db.session.add(self)

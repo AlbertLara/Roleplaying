@@ -11,26 +11,31 @@ from datetime import datetime
 import os
 endpoint = os.environ.get('ENDPOINT')
 
+
+
 @blueprint.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
 
     if form.validate_on_submit():
-
-        user = User(email=form.email.data,
-                    username=form.username.data,
-                    password=form.password.data,
-                    confirmed=False)
-        user.save_to_db()
-        token = generate_confirmation_token(user.email)
-        confirm_url = url_for('auth.confirm_email', token=token, _external=True)
-        html = render_template('auth/activate.html', confirm_url=confirm_url)
-        subject = "Confirma tu email"
-        redis_url = current_app.config['REDIS_URL']
-        with Connection(redis.from_url(redis_url)):
-            q = Queue()
-            q.enqueue(send_email, user.email, subject, html)
-        return redirect(url_for('auth.login'))
+        try:
+            user = User(email=form.email.data,
+                        username=form.username.data,
+                        password=form.password.data,
+                        confirmed=False)
+            user.save_to_db()
+            token = generate_confirmation_token(user.email)
+            confirm_url = url_for('auth.confirm_email', token=token, _external=True)
+            html = render_template('auth/activate.html', confirm_url=confirm_url)
+            subject = "Confirma tu email"
+            redis_url = current_app.config['REDIS_URL']
+            with Connection(redis.from_url(redis_url)):
+                q = Queue()
+                q.enqueue(send_email, user.email, subject, html)
+            return redirect(url_for('auth.login'))
+        except:
+            db.session.rollback()
+            flash('Sorry. That email already exists.', 'danger')
 
     return render_template('auth/register.html', form=form, title='Register')
 
@@ -45,10 +50,14 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is not None and user.verify_password(form.password.data):
-            user.save_to_db()
-            login_user(user)
-            return redirect(url_for('home.homepage'))
-    # load login template
+            if user.active:
+                user.save_to_db()
+
+                login_user(user)
+
+                return redirect(url_for('home.homepage'))
+            else:
+                flash('Cuenta no activada. Por favor, dirigite a tu correo para activarla', 'danger')
         else:
             flash('Usuario o contraseña erróneos.', 'danger')
     if not current_user.is_authenticated:
@@ -74,7 +83,6 @@ def logout():
 
 
 @blueprint.route('/confirm/<token>')
-@login_required
 def confirm_email(token):
     try:
         email = confirm_token(token)
@@ -82,12 +90,13 @@ def confirm_email(token):
         flash('The confirmation link is invalid or has expired.', 'danger')
     user = User.query.filter_by(email=email).first_or_404()
     if user.confirmed:
-        flash('Account already confirmed. Please login.', 'success')
+        flash('Cuenta ya activada', 'success')
     else:
         user.confirmed = True
+        user.active = True
         user.save_to_db()
-        flash('You have confirmed your account. Thanks!', 'success')
-    return redirect(url_for('main.home'))
+    login_user(user)
+    return redirect(url_for('home.homepage'))
 
 @blueprint.route('/profile')
 @login_required

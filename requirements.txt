@@ -5,7 +5,7 @@ Flask_SQLAlchemy==2.4.4
 flask_restx==0.2.0
 Flask_Login==0.5.0
 itsdangerous==1.1.0
-Werkzeug==0.16.0
+Werkzeug==1.0.1
 flask_bootstrap==3.3.7.1
 flask_mail==0.9.1
 flask_wtf==0.14.3
@@ -20,3 +20,6 @@ PyJWT==1.4.2
 passlib
 redis==3.5.3
 rq==1.4.2
+Flask_SocketIO==4.3.0
+python-engineio==3.12.1
+python-socketio==4.3.0

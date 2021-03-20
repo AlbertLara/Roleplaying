@@ -1,16 +1,20 @@
-from flask import Flask, render_template, Response, jsonify
-from .utils.db import login_manager, ma, db, mail, bootstrap
+from flask import Flask, render_template, copy_current_request_context, jsonify, session
+from .utils.db import login_manager, ma, db, mail, bootstrap, socket
 from flask_login import user_logged_out
+from redis import Redis
+import rq
 import os
 import logging
 from .utils.models import User
 from datetime import timedelta
 
-
+app = Flask(__name__, template_folder='web/templates', static_folder='web/static')
 
 def create_app():
-    app = Flask(__name__, template_folder='web/templates', static_folder='web/static')
+
     app.config.from_pyfile("config/settings.py")
+
+    socket.init_app(app)
     ma.init_app(app)
     mail.init_app(app)
 
@@ -35,19 +39,7 @@ def create_app():
     return app
 
 def register_blueprint(app):
-    from .api.home import blueprint as home_blueprint
-    app.register_blueprint(home_blueprint)
-    from .api.admin import blueprint as admin_blueprint
-    from .api.auth import blueprint as auth_blueprint
-
-    from .api.groups import blueprint as group_blueprint
-    from .api.friends import blueprint as friend_blueprint
-
-
-    app.register_blueprint(auth_blueprint)
-    app.register_blueprint(admin_blueprint)
-    app.register_blueprint(group_blueprint)
-    app.register_blueprint(friend_blueprint)
+    import project.api
 
 def register_error_handlers(app):
     @app.errorhandler(Exception)
