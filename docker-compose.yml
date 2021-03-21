@@ -24,7 +24,7 @@ services:
       - redis
   worker:
     image: web
-    command: python main.py run_worker
+    command: python worker.py run_worker
     container_name: worker1
     env_file:
       - ./config/.env.dev

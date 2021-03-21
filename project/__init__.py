@@ -1,4 +1,4 @@
-from flask import Flask, render_template, make_response, jsonify, session, request
+from flask import Flask, render_template, make_response, jsonify, session, request, g
 from .utils.db import *
 from flask_login import user_logged_out, current_user
 from redis import Redis
@@ -8,7 +8,7 @@ import logging
 from .utils.models import User
 from datetime import timedelta
 from .utils.token import decouple_user_sessions
-
+from datetime import timedelta
 
 
 def create_app():
@@ -23,7 +23,12 @@ def create_app():
         db.init_app(app)
         db.create_all()
 
-
+    @app.before_request
+    def before_request():
+        session.permanent = True
+        app.permanent_session_lifetime = timedelta(minutes=30)
+        session.modified = True
+        g.user = current_user
 
     @login_manager.user_loader
     def load_user(user_id):
