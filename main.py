@@ -1,4 +1,4 @@
-from project import create_app, db, socket
+from project import create_app, db
 import redis
 import json
 from flask.cli import FlaskGroup
@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 LOCAL = bool(os.getenv('LOCAL'))
 if LOCAL:
     load_dotenv('./config/.env.local')
-
 app = create_app()
 
 cli = FlaskGroup(create_app=create_app)
@@ -53,4 +52,4 @@ def run_worker():
         worker.work()
 
 if __name__ == "__main__":
-    socket.run(app)
+    cli()

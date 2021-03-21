@@ -1,4 +1,4 @@
-from flask import flash, redirect, url_for, render_template, current_app
+from flask import flash, redirect, url_for, render_template, session
 from flask_login import login_required, login_user, logout_user, current_user
 from rq import Queue, Connection
 import redis
@@ -53,7 +53,7 @@ def login():
             if user.active:
                 user.save_to_db()
 
-                login_user(user)
+                login_user(user,fresh=False)
 
                 return redirect(url_for('home.homepage'))
             else:
@@ -75,7 +75,7 @@ def logout():
     user = User.query.get(int(current_user.id))
     user.online = False
     user.save_to_db()
-
+    session.clear()
     logout_user()
     flash('You have successfully been logged out.')
     # redirect to the login page

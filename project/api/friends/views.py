@@ -1,16 +1,21 @@
-from flask import redirect, url_for, abort, render_template, session, current_app
+from flask import redirect, url_for, abort, render_template, session, request
 from flask_login import login_required
+from flask_session import RedisSessionInterface
 from .forms import *
 from . import *
+from rq import Queue, Connection
+import redis
 from ...services.service import *
 from flask_socketio import emit, send
 from ...utils.models import *
 from ...utils.db import socket
+
 @blueprint.route('/', methods=['GET','POST'])
 @login_required
 def index():
     form = NewFriend()
     friends = current_user.friends
+
     users = User.query.filter(User.id != current_user.id).all()
     user_friends = [friend['user'] for friend in friends]
     not_friends = []

@@ -4,6 +4,7 @@ from flask_bootstrap import Bootstrap
 from flask_socketio import SocketIO, emit, disconnect
 from flask_marshmallow import Marshmallow
 from flask_mail import Mail
+from flask_session import Session
 
 login_manager = LoginManager()
 db = SQLAlchemy()
@@ -11,3 +12,4 @@ ma = Marshmallow()
 mail = Mail()
 bootstrap = Bootstrap()
 socket = SocketIO()
+sess = Session()

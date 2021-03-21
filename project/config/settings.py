@@ -1,4 +1,5 @@
 import os
+import redis
 from distutils.util import strtobool
 
 ENV = os.getenv('ENV')
@@ -21,3 +22,8 @@ MAIL_PASSWORD = os.getenv('APP_MAIL_PASSWORD')
 
 REDIS_URL = os.getenv('REDIS_URL')
 QUEUES = ['default']
+
+SESSION_TYPE = os.getenv('SESSION_TYPE')
+SESSION_REDIS = redis.from_url(os.getenv('SESSION_REDIS'))
+SESSION_PERMANENT = False
+SESSION_PROTECTION = 'strong'
