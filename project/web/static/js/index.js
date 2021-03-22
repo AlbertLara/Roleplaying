@@ -30,6 +30,7 @@ $(function(){
             var value = item[1]
             data[key] = value
         }
+        $("#close").val("Hello")
         console.log(data)
         var event = JSON.stringify(data)
         console.log(data)
