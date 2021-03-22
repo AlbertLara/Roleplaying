@@ -20,6 +20,8 @@ $(function(){
 
 
     $("#test").bind("click",triggerClose)
+    
+    
     function triggerClose(e){
         var url = document.location.origin + '/close'
         var data = {}
@@ -30,7 +32,7 @@ $(function(){
             var value = item[1]
             data[key] = value
         }
-        $("#close").val("Hello")
+        document.getElementById("close").innerText = "Hello"
         console.log(data)
         var event = JSON.stringify(data)
         console.log(data)
