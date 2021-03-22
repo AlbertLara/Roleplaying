@@ -32,7 +32,6 @@ $(function(){
             var value = item[1]
             data[key] = value
         }
-        document.getElementById("close").innerText = "Hello"
         console.log(data)
         var event = JSON.stringify(data)
         console.log(data)
